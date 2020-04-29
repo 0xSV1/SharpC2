@@ -1,0 +1,21 @@
+﻿@inherits LayoutComponentBase
+
+<div class="sidebar">
+    <NavMenu />
+</div>
+
+<div class="main">
+
+    <div class="top-row px-4">
+        <AuthorizeView>
+            <Authorized>
+                <a href="#">Logout</a>
+            </Authorized>
+        </AuthorizeView>
+        <a href="https://github.com/SharpC2/SharpC2/wiki/" target="_blank">Wiki</a>
+    </div>
+
+    <div class="content px-4">
+        @Body
+    </div>
+</div>
