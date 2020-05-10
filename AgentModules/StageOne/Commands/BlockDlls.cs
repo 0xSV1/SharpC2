@@ -5,7 +5,7 @@ namespace Agent.Commands
 {
     internal class BlockDlls
     {
-        public static void SetConfig(string data, AgentController agent, ConfigurationController config)
+        public static void SetConfig(string data, AgentController agent, ConfigController config)
         {
             if (!string.IsNullOrEmpty(data))
             {

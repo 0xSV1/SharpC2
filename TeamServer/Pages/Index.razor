@@ -1,15 +1,88 @@
 ﻿@page "/"
 
-<AuthorizeView>
-    <Authorized>
-        Hello @context.User.Identity.Name.
-    </Authorized>
-    <NotAuthorized>
-        Please Log In
-    </NotAuthorized>
-</AuthorizeView>
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.TreeGrid
+@using Syncfusion.Blazor.Grids
+
+@using TeamServer.UI 
+@using TeamServer.Models
+
+<div class="col-lg-12 control-section">
+    <div class="content-wrapper">
+        <div class="row" style="padding: 10px;">
+            <SfTreeGrid @ref="AgentGrid" DataSource="@SessionData" IdMapping="AgentId" ParentIdMapping="ParentAgentId" TreeColumnIndex="1" AllowPaging="false" AllowSorting="true" AllowResizing="true" AllowSelection="true" Height="200">
+                <TreeGridEvents RowSelected="RowSelectHandler" TValue="SessionData"></TreeGridEvents>
+                <TreeGridPageSettings PageSize="1"></TreeGridPageSettings>
+                <TreeGridColumns>
+                    <TreeGridColumn Field="AgentId" HeaderText="Agent ID"></TreeGridColumn>
+                    <TreeGridColumn Field="ComputerName" HeaderText="Hostname"></TreeGridColumn>
+                    <TreeGridColumn Field="Identity" HeaderText="Identity"></TreeGridColumn>
+                    <TreeGridColumn Field="ProcessName" HeaderText="Process"></TreeGridColumn>
+                    <TreeGridColumn Field="ProcessId" HeaderText="PID"></TreeGridColumn>
+                    <TreeGridColumn Field="Architecture" HeaderText="Arch"></TreeGridColumn>
+                    <TreeGridColumn Field="Integrity" HeaderText="Integrity"></TreeGridColumn>
+                    <TreeGridColumn Field="LastCheckIn" HeaderText="Last Seen" Type=ColumnType.DateTime></TreeGridColumn>
+                </TreeGridColumns>
+            </SfTreeGrid>
+        </div>
+        <div style="height: 50vh; max-width:1600px; word-wrap:break-word; flex-wrap:wrap; text-wrap:normal; overflow-y:scroll;">
+            @if (this.AgentEvents != null)
+            {
+                foreach (var agentEvent in this.AgentEvents)
+                {
+                    <pre>[+] @agentEvent.EventTime : @agentEvent.EventType</pre>
+                    <pre>@agentEvent.Data</pre>
+                    <pre></pre>
+                }
+            }
+        </div>
+        <div class="row" style="height: 5vh; padding: 10px;">
+            <SfTextBox @bind-Value="Command" @onkeyup="SendCommand" Placeholder="@SelectedAgent" Enabled="true" FloatLabelType="FloatLabelType.Auto" Multiline="false"></SfTextBox>
+        </div>
+    </div>
+</div>
 
 @code{
+    private SfTreeGrid<SessionData> AgentGrid;
+    public List<SessionData> SessionData { get; set; }
+    public string SelectedAgent { get; set; }
+    public AgentEvent[] AgentEvents { get; set; }
+    private string Command { get; set; }
 
+    protected override void OnInitialized()
+    {
+        RefreshData();
+    }
 
+    public List<SessionData> SelectedRecords { get; set; }
+    private async void RowSelectHandler(RowSelectEventArgs<SessionData> Args)
+    {
+        this.SelectedRecords = await this.AgentGrid.GetSelectedRecords();
+        var agent = this.SelectedRecords;
+        this.SelectedAgent = agent[0].AgentId;
+        RefreshData();
+    }
+
+    private void SendCommand(KeyboardEventArgs e)
+    {
+        if (e.Key.Equals("ENTER", StringComparison.OrdinalIgnoreCase))
+        {
+            CommandHandler.SendCommand(this.SelectedAgent, this.Command);
+            this.Command = string.Empty;
+            RefreshData();
+        }
+    }
+
+    private void RefreshData()
+    {
+        var agents = Program.ServerController.GetConnectedAgents();
+        if (agents != null)
+        {
+            this.SessionData = agents.ToList();
+        }
+
+        this.AgentEvents = Program.ServerController.GetAgentEvents(this.SelectedAgent);
+
+        this.StateHasChanged();
+    }
 }

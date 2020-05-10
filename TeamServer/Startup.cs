@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
+using Syncfusion.Blazor;
+using Syncfusion.Licensing;
 using Newtonsoft.Json.Serialization;
 using NSwag.Generation.Processors.Security;
 
@@ -26,9 +28,12 @@ namespace TeamServer
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            SyncfusionLicenseProvider.RegisterLicense("MjU0NzIzQDMxMzgyZTMxMmUzMFBST09VdXBtWXZpemN5bHRLNExhUnJBWW9UTTBpcjdNMjhrRit4Y0Flamc9");
+
             services.AddSignalR();
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddSyncfusionBlazor();
 
             services.AddControllers().AddNewtonsoftJson(j =>
             {

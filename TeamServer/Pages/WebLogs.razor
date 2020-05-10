@@ -1,0 +1,26 @@
+﻿@page "/weblog"
+
+@using TeamServer.Models 
+
+<div class="col-lg-12 control-section">
+    <div class="content-wrapper">
+        <div>
+            <h2 style="padding-bottom: 50px">Web Logs</h2>
+
+            @foreach (var log in this.Logs)
+            {
+                <pre>@log.Time : @log.Request</pre>
+            }
+
+        </div>
+    </div>
+</div>
+
+@code{
+    public WebLog[] Logs { get; set; }
+
+    protected override void OnInitialized()
+    {
+        this.Logs = Program.ServerController.GetWebLogs();
+    }
+}

@@ -12,6 +12,8 @@ namespace TeamServer.Models
         public string Identity { get; set; }
         public string ProcessName { get; set; }
         public int ProcessId { get; set; }
+        public string Architecture { get; set; }
+        public string Integrity { get; set; }
         public DateTime FirstSeen { get; set; }
         public DateTime LastCheckIn { get; set; }
         

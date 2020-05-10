@@ -6,6 +6,6 @@ namespace Agent.Interfaces
     public interface IAgentModule
     {
         AgentModuleInfo GetModuleInfo();
-        void Initialise(AgentController agent, ConfigurationController config);
+        void Initialise(AgentController agent, ConfigController config);
     }
 }

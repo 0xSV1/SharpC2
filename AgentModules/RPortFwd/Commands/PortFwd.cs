@@ -67,8 +67,12 @@ namespace Agent.Commands
         {
             var bindPort = int.Parse(data);
             var rPortFwd = ReversePortForwards.Where(r => r.BindPort == bindPort).FirstOrDefault();
-            try { rPortFwd.Socket.Shutdown(SocketShutdown.Both); } catch { rPortFwd.Socket.Close(); }
-            ReversePortForwards.Remove(rPortFwd);
+            if (rPortFwd != null)
+            {
+                try { rPortFwd.Socket.Shutdown(SocketShutdown.Both); } catch { rPortFwd.Socket.Close(); }
+                ReversePortForwards.Remove(rPortFwd);
+            }
+            
             return ShowReversePortForwwrds();
         }
 

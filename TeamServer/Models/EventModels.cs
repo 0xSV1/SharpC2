@@ -26,7 +26,9 @@ namespace TeamServer.Models
         {
             AgentConnected,
             AgentExited,
+            AgentCommandRequest,
             AgentCommandResponse,
+            AgentHelpRequest,
             AgentModuleRegistered,
             AgentErrorMessage
         }

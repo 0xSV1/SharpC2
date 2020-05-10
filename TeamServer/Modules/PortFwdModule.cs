@@ -51,7 +51,7 @@ namespace TeamServer.Modules
             var forwardPort = Convert.ToInt32(split[2]);
             var httpData = Convert.FromBase64String(split[3]);
 
-            serverController.LogWebRequest(Encoding.UTF8.GetString(httpData));
+            //serverController.LogWebRequest(Encoding.UTF8.GetString(httpData));
 
             var t = new Thread(() =>
             {

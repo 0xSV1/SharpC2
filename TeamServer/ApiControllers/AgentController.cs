@@ -16,9 +16,9 @@ namespace TeamServer.ApiControllers
         }
 
         [HttpGet("events")]
-        public AgentEvent[] GetAgentEvents()
+        public AgentEvent[] GetAgentEvents(string agentId)
         {
-            return Program.ServerController.GetAgentEvents();
+            return Program.ServerController.GetAgentEvents(agentId);
         }
 
         [HttpPost("commandrequest")]

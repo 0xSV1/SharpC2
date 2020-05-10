@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29728.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamServer", "TeamServer\TeamServer.csproj", "{145B93FE-C9C4-45C1-AC7D-A6AAD468A697}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agent", "Agent\Agent.csproj", "{48EA86EB-D492-4508-A10E-C6689EE2705C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTTPAgent", "Agents\HTTPAgent\HTTPAgent.csproj", "{48EA86EB-D492-4508-A10E-C6689EE2705C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AgentModules", "AgentModules", "{5F702982-B2F7-4CDE-A506-6C153E8751E6}"
 EndProject
@@ -13,7 +13,27 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StageOne", "AgentModules\St
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortFwd", "AgentModules\RPortFwd\PortFwd.csproj", "{F94B4342-419A-413D-8B97-950F2B334E20}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Agents", "Agents", "{2902A8F5-F2D8-4335-8C59-81D109ED83A0}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Agent", "Agent\Agent.shproj", "{382EDECD-CBD5-43C3-A974-43F4D872ED1F}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "C2", "C2\C2.shproj", "{70E7E846-D2DE-44F4-95E9-87F8C99D0E9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCPAgent", "Agents\TCPAgent\TCPAgent.csproj", "{DA3D6C9F-9578-4DBA-9FC0-85CDA644EFDD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{B488B33B-737B-426D-8274-1216940F5161}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Agent\Agent.projitems*{145b93fe-c9c4-45c1-ac7d-a6aad468a697}*SharedItemsImports = 5
+		C2\C2.projitems*{145b93fe-c9c4-45c1-ac7d-a6aad468a697}*SharedItemsImports = 5
+		Agent\Agent.projitems*{382edecd-cbd5-43c3-a974-43f4d872ed1f}*SharedItemsImports = 13
+		Agent\Agent.projitems*{48ea86eb-d492-4508-a10e-c6689ee2705c}*SharedItemsImports = 4
+		C2\C2.projitems*{48ea86eb-d492-4508-a10e-c6689ee2705c}*SharedItemsImports = 4
+		C2\C2.projitems*{70e7e846-d2de-44f4-95e9-87f8c99d0e9f}*SharedItemsImports = 13
+		Agent\Agent.projitems*{da3d6c9f-9578-4dba-9fc0-85cda644efdd}*SharedItemsImports = 4
+		C2\C2.projitems*{da3d6c9f-9578-4dba-9fc0-85cda644efdd}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -35,13 +55,21 @@ Global
 		{F94B4342-419A-413D-8B97-950F2B334E20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F94B4342-419A-413D-8B97-950F2B334E20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F94B4342-419A-413D-8B97-950F2B334E20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA3D6C9F-9578-4DBA-9FC0-85CDA644EFDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA3D6C9F-9578-4DBA-9FC0-85CDA644EFDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA3D6C9F-9578-4DBA-9FC0-85CDA644EFDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA3D6C9F-9578-4DBA-9FC0-85CDA644EFDD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{48EA86EB-D492-4508-A10E-C6689EE2705C} = {2902A8F5-F2D8-4335-8C59-81D109ED83A0}
 		{A56EAA90-ACC8-4273-97F5-BBA516C1F659} = {5F702982-B2F7-4CDE-A506-6C153E8751E6}
 		{F94B4342-419A-413D-8B97-950F2B334E20} = {5F702982-B2F7-4CDE-A506-6C153E8751E6}
+		{382EDECD-CBD5-43C3-A974-43F4D872ED1F} = {B488B33B-737B-426D-8274-1216940F5161}
+		{70E7E846-D2DE-44F4-95E9-87F8C99D0E9F} = {B488B33B-737B-426D-8274-1216940F5161}
+		{DA3D6C9F-9578-4DBA-9FC0-85CDA644EFDD} = {2902A8F5-F2D8-4335-8C59-81D109ED83A0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F894B407-857C-42EE-89C3-1BA09068A114}

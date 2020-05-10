@@ -7,7 +7,7 @@
     <ProjectGuid>{48EA86EB-D492-4508-A10E-C6689EE2705C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Agent</RootNamespace>
-    <AssemblyName>Agent</AssemblyName>
+    <AssemblyName>HTTPAgent</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -47,16 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\AgentController.cs" />
-    <Compile Include="Common\Generic.cs" />
-    <Compile Include="Models\AgentModels.cs" />
-    <Compile Include="Models\C2Models.cs" />
-    <Compile Include="Modules\CoreAgentModule.cs" />
-    <Compile Include="Controllers\ConfigurationController.cs" />
-    <Compile Include="Helpers.cs" />
-    <Compile Include="Interfaces\IAgentModule.cs" />
-    <Compile Include="Interfaces\ICommModule.cs" />
-    <Compile Include="Models\ConfigModels.cs" />
     <Compile Include="Modules\HTTPCommModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,5 +54,7 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
+  <Import Project="..\..\Agent\Agent.projitems" Label="Shared" />
+  <Import Project="..\..\C2\C2.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

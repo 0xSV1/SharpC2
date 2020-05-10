@@ -58,7 +58,7 @@ namespace Agent
             };
         }
 
-        public void Initialise(AgentController agent, ConfigurationController config)
+        public void Initialise(AgentController agent, ConfigController config)
         {
             var moduleInfo = GetModuleInfo();
             agent.RegisterAgentModule(moduleInfo);
@@ -68,31 +68,31 @@ namespace Agent
             agent.SendModuleRegistered(moduleInfo);
         }
 
-        private void HandleShow(string data, AgentController agent, ConfigurationController config)
+        private void HandleShow(string data, AgentController agent, ConfigController config)
         {
             var result = PortFwd.ShowReversePortForwwrds();
             agent.SendCommandOutput(result);
         }
 
-        private void HandleStart(string data, AgentController agent, ConfigurationController config)
+        private void HandleStart(string data, AgentController agent, ConfigController config)
         {
             var result = PortFwd.NewReversePortForward(data);
             agent.SendCommandOutput(result);
         }
 
-        private void HandleStop(string data, AgentController agent, ConfigurationController config)
+        private void HandleStop(string data, AgentController agent, ConfigController config)
         {
             var result = PortFwd.StopReversePortForward(data);
             agent.SendCommandOutput(result);
         }
 
-        private void HandleFlush(string data, AgentController agent, ConfigurationController config)
+        private void HandleFlush(string data, AgentController agent, ConfigController config)
         {
             var result = PortFwd.FlushReversePortForwards();
             agent.SendCommandOutput(result);
         }
 
-        private void HandleDataFromTeamServer(string data, AgentController agent, ConfigurationController config)
+        private void HandleDataFromTeamServer(string data, AgentController agent, ConfigController config)
         {
             PortFwd.QueueDataFromTeamServer(data);
         }

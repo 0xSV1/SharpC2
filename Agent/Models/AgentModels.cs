@@ -30,6 +30,12 @@ namespace Agent.Models
         }
     }
 
+    public class TcpAgent
+    {
+        public string Address { get; set; }
+        public int Port { get; set; }
+    }
+
     public enum AgentStatus
     {
         Running,

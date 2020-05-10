@@ -7,7 +7,7 @@ namespace Agent.Commands
 {
     internal class PPID
     {
-        public static void SetConfig(string data, AgentController agent, ConfigurationController config)
+        public static void SetConfig(string data, AgentController agent, ConfigController config)
         {
             Process process;
 

@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Agent\Agent.csproj" />
+    <ProjectReference Include="..\..\Agents\HTTPAgent\HTTPAgent.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,14 +1,15 @@
-﻿using Agent.Models;
+﻿using C2.Models;
+
 using Agent.Controllers;
 
 namespace Agent.Interfaces
 {
     public interface ICommModule
     {
-        void Initialise(ConfigurationController configController);
+        void Initialise(ConfigController configController);
         void Run();
-        void SendData(C2Data c2Data);
-        bool RecvData(out C2Data c2Data);
+        void SendData(AgentMessage message);
+        bool RecvData(out AgentMessage message);
         void Stop();
     }
 }

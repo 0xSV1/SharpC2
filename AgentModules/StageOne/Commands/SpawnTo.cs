@@ -8,7 +8,7 @@ namespace Agent.Commands
 {
     internal class SpawnTo
     {
-        internal static void SetConfig(string data, AgentController agent, ConfigurationController config)
+        internal static void SetConfig(string data, AgentController agent, ConfigController config)
         {
             // if no args, reset to default
             if (string.IsNullOrEmpty(data))

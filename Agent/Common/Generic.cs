@@ -6,10 +6,10 @@ using System.Collections.Generic;
 
 namespace Agent.Common
 {
-    internal sealed class GenericObjectResult : SharpC2Result
+    public sealed class GenericObjectResult : SharpC2Result
     {
-        internal object Result { get; }
-        public override IList<SharpC2ResultProperty> ResultProperties
+        public object Result { get; }
+        protected internal override IList<SharpC2ResultProperty> ResultProperties
         {
             get
             {
@@ -24,7 +24,7 @@ namespace Agent.Common
             }
         }
 
-        internal GenericObjectResult(object Result)
+        public GenericObjectResult(object Result)
         {
             this.Result = Result;
         }
@@ -40,9 +40,14 @@ namespace Agent.Common
 
         private const int PROPERTY_SPACE = 3;
 
-        internal string FormatList()
+        public string FormatList()
         {
             return this.ToString();
+        }
+
+        private string FormatTable()
+        {
+            return "";
         }
 
         public override string ToString()
@@ -155,7 +160,7 @@ namespace Agent.Common
 
     public abstract class SharpC2Result
     {
-        public abstract IList<SharpC2ResultProperty> ResultProperties { get; }
+        protected internal abstract IList<SharpC2ResultProperty> ResultProperties { get; }
     }
 
     public class SharpC2ResultProperty
@@ -164,14 +169,16 @@ namespace Agent.Common
         public object Value { get; set; }
     }
 
-    internal sealed class FileSystemEntryResult : SharpC2Result
+    //
+
+    public sealed class FileSystemEntryResult : SharpC2Result
     {
-        internal string Name { get; set; } = "";
-        internal long Length { get; set; } = 0;
-        internal DateTime CreationTimeUtc { get; set; } = new DateTime();
-        internal DateTime LastAccessTimeUtc { get; set; } = new DateTime();
-        internal DateTime LastWriteTimeUtc { get; set; } = new DateTime();
-        public override IList<SharpC2ResultProperty> ResultProperties
+        public string Name { get; set; }
+        public long Length { get; set; }
+        public DateTime CreationTimeUtc { get; set; }
+        public DateTime LastAccessTimeUtc { get; set; }
+        public DateTime LastWriteTimeUtc { get; set; }
+        protected internal override IList<SharpC2ResultProperty> ResultProperties
         {
             get
             {
@@ -182,6 +189,110 @@ namespace Agent.Common
                         new SharpC2ResultProperty { Name = "CreationTimeUtc", Value = CreationTimeUtc },
                         new SharpC2ResultProperty { Name = "LastAccessTimeUtc", Value = LastAccessTimeUtc },
                         new SharpC2ResultProperty { Name = "LastWriteTimeUtc", Value = LastWriteTimeUtc }
+                    };
+            }
+        }
+    }
+
+    public sealed class DisableEtwSetting : SharpC2Result
+    {
+        public bool Disabled { get; set; }
+        protected internal override IList<SharpC2ResultProperty> ResultProperties
+        {
+            get
+            {
+                return new List<SharpC2ResultProperty>
+                    {
+                        new SharpC2ResultProperty { Name = "Disabled", Value = Disabled }
+                    };
+            }
+        }
+    }
+
+    public sealed class BlockDllsSetting : SharpC2Result
+    {
+        public bool Disabled { get; set; }
+        protected internal override IList<SharpC2ResultProperty> ResultProperties
+        {
+            get
+            {
+                return new List<SharpC2ResultProperty>
+                    {
+                        new SharpC2ResultProperty { Name = "Disabled", Value = Disabled }
+                    };
+            }
+        }
+    }
+
+    public sealed class PPIDSetting : SharpC2Result
+    {
+        public int ProcessId { get; set; }
+        public string ProcessName { get; set; }
+        protected internal override IList<SharpC2ResultProperty> ResultProperties
+        {
+            get
+            {
+                return new List<SharpC2ResultProperty>
+                    {
+                        new SharpC2ResultProperty { Name = "Process Id", Value = ProcessId },
+                        new SharpC2ResultProperty { Name = "Process Name", Value = ProcessName }
+                    };
+            }
+        }
+    }
+
+    public sealed class SpawnToSetting : SharpC2Result
+    {
+        public string Path { get; set; }
+        protected internal override IList<SharpC2ResultProperty> ResultProperties
+        {
+            get
+            {
+                return new List<SharpC2ResultProperty>
+                    {
+                        new SharpC2ResultProperty { Name = "Path", Value = Path }
+                    };
+            }
+        }
+    }
+
+    public sealed class ReversePortForwardResult : SharpC2Result
+    {
+        public string BindAddress { get; set; }
+        public int BindPort { get; set; }
+        public string ForwardAddress { get; set; }
+        public int ForwardPort { get; set; }
+        protected internal override IList<SharpC2ResultProperty> ResultProperties
+        {
+            get
+            {
+                return new List<SharpC2ResultProperty>
+                    {
+                        new SharpC2ResultProperty { Name = "Bind Address", Value = BindAddress },
+                        new SharpC2ResultProperty { Name = "Bind Port", Value = BindPort },
+                        new SharpC2ResultProperty { Name = "Forward Address", Value = ForwardAddress },
+                        new SharpC2ResultProperty { Name = "Forward Port", Value = ForwardPort }
+                    };
+            }
+        }
+    }
+
+    public sealed class AgentHelpResult : SharpC2Result
+    {
+        public string Module { get; set; }
+        public string Command { get; set; }
+        public string Description { get; set; }
+        public string HelpText { get; set; }
+        protected internal override IList<SharpC2ResultProperty> ResultProperties
+        {
+            get
+            {
+                return new List<SharpC2ResultProperty>
+                    {
+                        new SharpC2ResultProperty { Name = "Module", Value = Module },
+                        new SharpC2ResultProperty { Name = "Command", Value = Command },
+                        new SharpC2ResultProperty { Name = "Description", Value = Description },
+                        new SharpC2ResultProperty { Name = "HelpText", Value = HelpText }
                     };
             }
         }

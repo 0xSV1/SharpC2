@@ -5,14 +5,14 @@ using System.Security.Cryptography;
 
 namespace TeamServer
 {
-    internal class Common
+    public class Common
     {
-        internal static string jwtSecret = Helpers.GenerateRandomString(128);
+        public static string jwtSecret = Helpers.GenerateRandomString(128);
     }
 
-    internal class Helpers
+    public class Helpers
     {
-        internal static string GenerateRandomString(int len)
+        public static string GenerateRandomString(int len)
         {
             var random = new Random();
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -20,17 +20,17 @@ namespace TeamServer
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        internal static string Base64Decode(string input)
+        public static string Base64Decode(string input)
         {
             return Encoding.ASCII.GetString(Convert.FromBase64String(input));
         }
 
-        internal static string Base64Encode(byte[] input)
+        public static string Base64Encode(byte[] input)
         {
             return Convert.ToBase64String(input);
         }
 
-        internal static string GetPassword()
+        public static string GetPassword()
         {
             Console.Write("Server Password: ");
 
@@ -59,7 +59,7 @@ namespace TeamServer
             return password;
         }
 
-        internal static byte[] GetPasswordHash(string plaintext)
+        public static byte[] GetPasswordHash(string plaintext)
         {
             byte[] hashedPass;
 

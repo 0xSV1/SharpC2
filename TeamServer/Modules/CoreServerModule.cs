@@ -4,6 +4,8 @@ using System.Text;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Json;
 
+using C2.Models;
+
 using TeamServer.Models;
 using TeamServer.Interfaces;
 using TeamServer.Controllers;
@@ -68,11 +70,7 @@ namespace TeamServer.Modules
 
         protected void HandleAgentCheckin(string data, SessionData sessionData)
         {
-            var metadata = new InitialMetadata();
-            var ms = new MemoryStream(Encoding.UTF8.GetBytes(data));
-            var ser = new DataContractJsonSerializer(metadata.GetType());
-            metadata = ser.ReadObject(ms) as InitialMetadata;
-            ms.Close();
+            var metadata = C2.Helpers.Deserialise<InitialMetadata>(data);
 
             agentController.CreateSession(metadata);
             
@@ -92,6 +90,9 @@ namespace TeamServer.Modules
                 EventType = AgentEvent.AgentEventType.AgentCommandResponse,
                 Data = data
             });
+
+            sessionData.LastCheckIn = DateTime.UtcNow;
+            agentController.UpdateSession(sessionData.AgentId, sessionData);
         }
 
         protected void HandleErrorMessages(string data, SessionData sessionData)
@@ -107,12 +108,7 @@ namespace TeamServer.Modules
 
         protected void RegisterAgentModule(string data, SessionData sessionData)
         {
-            var moduleInfo = new AgentModuleInfo();
-            var ms = new MemoryStream(Encoding.UTF8.GetBytes(data));
-            var ser = new DataContractJsonSerializer(moduleInfo.GetType());
-            moduleInfo = ser.ReadObject(ms) as AgentModuleInfo;
-            ms.Close();
-
+            var moduleInfo = C2.Helpers.Deserialise<AgentModuleInfo>(data);
             var session = agentController.GetSession(sessionData.AgentId);
 
             if (session.loadedModules == null)

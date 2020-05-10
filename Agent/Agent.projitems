@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>382edecd-cbd5-43c3-a974-43f4d872ed1f</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Agent</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\Core.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Generic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\Helpers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\AgentController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\ConfigController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IAgentModule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ICommModule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ICommRelay.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AgentModels.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ConfigModels.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Modules\CoreAgentModule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Modules\TCPRelay.cs" />
+  </ItemGroup>
+</Project>

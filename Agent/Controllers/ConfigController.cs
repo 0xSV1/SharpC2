@@ -4,13 +4,13 @@ using Agent.Models;
 
 namespace Agent.Controllers
 {
-    public class ConfigurationController
+    public class ConfigController
     {
         protected Dictionary<ConfigurationSettings, object> configSettings = new Dictionary<ConfigurationSettings, object>();
 
-        internal ConfigurationController Create()
+        public ConfigController Create()
         {
-            return new ConfigurationController();
+            return new ConfigController();
         }
 
         public void SetOption(ConfigurationSettings option, object value)

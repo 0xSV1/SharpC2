@@ -27,7 +27,7 @@ namespace Agent.Execution
         const uint DUPLICATE_CLOSE_SOURCE = 0x00000001;
         const uint DUPLICATE_SAME_ACCESS = 0x00000002;
 
-        internal static void CreateProcessForShellRun(AgentController agent, ConfigurationController config, string command, bool shell = false)
+        internal static void CreateProcessForShellRun(AgentController agent, ConfigController config, string command, bool shell = false)
         {
             var result = string.Empty;
 
@@ -150,7 +150,7 @@ namespace Agent.Execution
             agent.SendCommandOutput(result);
         }
 
-        internal static int CreateSpawnToProcess(AgentController agent, ConfigurationController config)
+        internal static int CreateSpawnToProcess(AgentController agent, ConfigController config)
         {
             var blockDlls = (bool)config.GetOption(ConfigurationSettings.BlockDLLs);
             var dwAttributeCount = blockDlls ? 2 : 1;

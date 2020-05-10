@@ -15,10 +15,10 @@ namespace TeamServer.ApiControllers
             return Program.ServerController.GetCommModuleInfo();
         }
 
-        [HttpGet("logs")]
-        public string[] GetWebLogs()
-        {
-            return Program.ServerController.GetWebRequests();
-        }
+        //[HttpGet("logs")]
+        //public string[] GetWebLogs()
+        //{
+        //    return Program.ServerController.GetWebRequests();
+        //}
     }
 }

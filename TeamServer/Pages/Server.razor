@@ -1,0 +1,58 @@
+﻿@page "/server"
+
+@using TeamServer.Models
+
+<div class="col-lg-12 control-section">
+    <div class="content-wrapper">
+        <div>
+            <h2>Server Modules</h2>
+
+            @foreach (var module in this.ServerModules)
+            {
+                <h4 style="padding-top:30px;">@module.Name</h4>
+                <p>by @module.Developer</p>
+
+                <table width="100%">
+                    <tr>
+                        <th>Command</th>
+                        <th>Description</th>
+                    </tr>
+                    @foreach (var cmd in module.Commands)
+                    {
+                <tr>
+                    <td>@cmd.Name</td>
+                    <td>@cmd.Description</td>
+                </tr>   
+                    }
+                </table>
+
+            }
+        </div>
+        <div>
+            <h2 style="padding-top: 100px;">Comm Module</h2>
+            <table width="100%">
+                <tr>
+                    <th>Name</th>
+                    <th>Developer</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>@this.CommModule.Name</td>
+                    <td>@this.CommModule.Developer</td>
+                    <td>@this.CommModule.Description</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code{
+    public ServerModuleInfo[] ServerModules { get; set; }
+    public ModuleInformation CommModule { get; set; }
+
+    protected override void OnInitialized()
+    {
+        this.ServerModules = Program.ServerController.GetServerModulesInfo();
+        this.CommModule = Program.ServerController.GetCommModuleInfo();
+    }
+}

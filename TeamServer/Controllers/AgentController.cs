@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Collections.Generic;
 
+using C2.Models;
+
 using TeamServer.Models;
 
 namespace TeamServer.Controllers
@@ -21,11 +23,14 @@ namespace TeamServer.Controllers
             sessionCache.Add(new SessionData
             {
                 AgentId = data.AgentId,
+                ParentAgentId = data.ParentAgentId,
                 InternalAddresses = data.InternalAddresses,
                 ComputerName = data.ComputerName,
                 Identity = data.Identity,
                 ProcessName = data.ProcessName,
                 ProcessId = data.ProcessId,
+                Architecture = data.Architecture,
+                Integrity = data.Integrity,
                 FirstSeen = DateTime.UtcNow
             });
         }
@@ -47,9 +52,9 @@ namespace TeamServer.Controllers
             session = data;
         }
 
-        internal AgentEvent[] GetAgentEvents()
+        internal AgentEvent[] GetAgentEvents(string agentId)
         {
-            return agentEvents.ToArray();
+            return agentEvents.Where(e => e.AgentId.Equals(agentId, StringComparison.OrdinalIgnoreCase)).OrderBy(e => e.EventTime).ToArray();
         }
     }
 }

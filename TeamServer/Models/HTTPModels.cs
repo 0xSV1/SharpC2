@@ -1,4 +1,6 @@
-﻿namespace TeamServer.Models
+﻿using System;
+
+namespace TeamServer.Models
 {
     internal class HTTPChunk
     {
@@ -6,7 +8,11 @@
         internal string Data { get; set; }
         internal int Length { get; set; }
         internal bool Final { get; set; }
-        internal string Module { get; set; }
-        internal string Command { get; set; }
+    }
+
+    public class WebLog
+    {
+        public DateTime Time { get; set; }
+        public string Request { get; set; }
     }
 }
