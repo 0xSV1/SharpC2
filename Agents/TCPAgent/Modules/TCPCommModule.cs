@@ -84,7 +84,7 @@ namespace Agent.Modules
         {
             var buffer = new byte[TcpClient.ReceiveBufferSize];
             var stream = TcpClient.GetStream();
-            stream.ReadTimeout = (int)ConfigController.GetOption(ConfigurationSettings.SleepTime);
+            stream.ReadTimeout = 500;
 
             try
             {

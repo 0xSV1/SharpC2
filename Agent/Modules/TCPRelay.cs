@@ -68,7 +68,7 @@ namespace Agent.Modules
                     if (ct.IsCancellationRequested) { return; }
 
                     var stream = tcpClient.GetStream();
-                    stream.ReadTimeout = (int)ConfigController.GetOption(ConfigurationSettings.SleepTime);
+                    stream.ReadTimeout = 500;
 
                     if (outboundQueue.Count > 0)
                     {

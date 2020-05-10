@@ -277,14 +277,14 @@ namespace Agent.Execution
                         } while (true);
 
                         reader.Close();
+
+                        agent.SendCommandOutput(output);
                     }
                     catch { }
                     finally
                     {
                         if (!safeHandle.IsClosed) { safeHandle.Close(); }
                         if (hStdOutRead != IntPtr.Zero) { Win32.Kernel32.CloseHandle(hStdOutRead); }
-
-                        agent.SendCommandOutput(output);
                     }
                 });
 

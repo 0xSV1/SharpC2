@@ -42,7 +42,7 @@ namespace Agent.Modules
                     new AgentModuleInfo.AgentCommand
                     {
                         Name = "sleep",
-                        Description = "Set the sleep time (in seconds) and jitter factor (percent).",
+                        Description = "Set the Agent's sleep and jitter",
                         HelpText = "sleep [time] [jitter]",
                         Callback = SetSleep
                     },
