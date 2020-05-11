@@ -7,7 +7,7 @@
     <ProjectGuid>{DA3D6C9F-9578-4DBA-9FC0-85CDA644EFDD}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Agent</RootNamespace>
-    <AssemblyName>TCPAgent</AssemblyName>
+    <AssemblyName>Agent</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

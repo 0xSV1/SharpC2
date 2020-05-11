@@ -7,7 +7,7 @@
     <ProjectGuid>{48EA86EB-D492-4508-A10E-C6689EE2705C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Agent</RootNamespace>
-    <AssemblyName>HTTPAgent</AssemblyName>
+    <AssemblyName>Agent</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
